@@ -1,0 +1,34 @@
+name: 'Landing Zone Security Hub action'
+description: 'Auto Activates Security Hub on every created account managed by the LZ and connect it back to the Security account'
+inputs:
+  SECURITYHUB_USER_ID:
+    description: 'AWS Access Key for your Security Hub User'
+    required: true
+  SECURITYHUB_ACCESS_KEY:
+    description: 'AWS Secret Key for your Security Hub User'
+    required: true
+  SECURITYHUB_CROSSACCOUNT_ROLE: 
+    description: 'ARN of the role AWSLandingZoneSecurityHubRole in the security account'
+    required: true
+  SECURITYHUB_LISTACCOUNTS_ROLE:
+    description: 'ARN of the role AWSLandingZoneReadOnlyListAccountsRole in the primary account'
+    required: true
+  SECURITYHUB_EXECUTION_ROLE:
+    description: 'Name of the role AWSLandingZoneSecurityHubExecutionRole in the target accounts'
+    required: true
+  SECURITYHUB_REGIONS:
+    description: 'Comma separated list of regions where Security Hub must be deployed. If not present, will deploy everywhere'
+    required: false
+outputs:
+  ACTIVATION_RESULT:
+    description: 'The result of the activating Security Hub in target accounts'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.SECURITYHUB_USER_ID }}
+    - ${{ inputs.SECURITYHUB_ACCESS_KEY }}
+    - ${{ inputs.SECURITYHUB_CROSSACCOUNT_ROLE }}
+    - ${{ inputs.SECURITYHUB_LISTACCOUNTS_ROLE }}
+    - ${{ inputs.SECURITYHUB_EXECUTION_ROLE }}
+    - ${{ inputs.SECURITYHUB_REGIONS }}
