@@ -69,6 +69,7 @@ assume_role(){
 
 organizations_list_accounts_to_csv(){
   local OUTPUT="$1"
+  local EXCLUDE_ACCOUNT="$2"
   local ACCOUNTS
   
   ACCOUNTS=$(aws --profile listaccounts organizations list-accounts)
@@ -79,7 +80,7 @@ organizations_list_accounts_to_csv(){
 
   echo "AccountId,EmailAddress" > "${OUTPUT}"
 
-  jq -r '.Accounts[] | [ .Id, .Email ] | @csv' <<< "${ACCOUNTS}" | tr -d \" >> "${OUTPUT}"
+  jq -r '.Accounts[] | [ .Id, .Email ] | @csv' <<< "${ACCOUNTS}" | tr -d \" | grep -v "$EXCLUDE_ACCOUNT" >> "${OUTPUT}"
 }
 
 check_input(){
@@ -119,6 +120,7 @@ SECURITYHUB_CROSSACCOUNT_ROLE="$3"
 SECURITYHUB_LISTACCOUNTS_ROLE="$4"
 SECURITYHUB_EXECUTION_ROLE="$5"
 SECURITYHUB_REGIONS="${6:+noregions}"
+echo "Found regions ${SECURITYHUB_REGIONS}"
 SECURITYHUB_REGIONS="eu-west-1,eu-west-2,eu-west-3,eu-central-1,us-east-1"
 
 check_input "$SECURITYHUB_USER_ID" "$SECURITYHUB_ACCESS_KEY" "$SECURITYHUB_CROSSACCOUNT_ROLE" "$SECURITYHUB_LISTACCOUNTS_ROLE" "$SECURITYHUB_EXECUTION_ROLE" "$SECURITYHUB_REGIONS"
@@ -147,7 +149,7 @@ fi
 
 # List accounts retrieving the ID and store them in a CSV file
 check_env
-organizations_list_accounts_to_csv /tmp/organization.csv
+organizations_list_accounts_to_csv /tmp/organization.csv "$SECURITY_ACCOUNT_ID"
 
 # Execute the script on CSV file as the security user
 assume_role "$CROSS_ACCOUNT_ROLE"
