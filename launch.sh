@@ -168,8 +168,6 @@ fi
 check_env
 organizations_list_accounts_to_csv "$CSV_FILE"
 
-cat "$CSV_FILE"
-
 # Execute the script on CSV file as the security user
 assume_role "$CROSS_ACCOUNT_ROLE"
 /securityhub/enablesecurityhub.py --master_account "$SECURITY_ACCOUNT_ID" \

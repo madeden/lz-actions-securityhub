@@ -2,8 +2,6 @@
 FROM ubuntu:18.04
 
 ENV DEBIAN_FRONTEND=noninteractive
-ARG USERNAME=securityhub
-ARG USERID=34000
 
 # Upgrade and install dependencies
 RUN apt-get update \
@@ -15,7 +13,7 @@ RUN apt-get update \
     jq \
     file \
     git \
-  && mkdir -p /${USERNAME} \
+  && mkdir -p /securityhub \
   && git clone https://github.com/awslabs/aws-securityhub-multiaccount-scripts /${USERNAME} \
   && pip3 install --upgrade setuptools \
   && pip3 install --upgrade wheel \
@@ -25,20 +23,13 @@ RUN apt-get update \
   && pip3 install --upgrade boto3 \
   && pip3 freeze
 
-RUN addgroup --gid ${USERID} ${USERNAME} \
-  && mkdir /home/${USERNAME} \
-  && useradd --shell /bin/bash -d /home/${USERNAME} -g ${USERNAME} ${USERNAME} \
-  && chown -R ${USERNAME} /home/${USERNAME} \
-  && chown -R ${USERNAME} /${USERNAME}/ \
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1 \
   && chmod +x /${USERNAME}/*.py
 
 # Copies your code file from your action repository to the filesystem path `/` of the container
 COPY launch.sh /entrypoint.sh
 COPY config.template /config.template
 COPY credentials.template /credentials.template
-
-# Switch to ${USERNAME} user
-# USER ${USERNAME}
 
 # Code file to execute when the docker container starts up (`entrypoint.sh`)
 ENTRYPOINT ["/entrypoint.sh"]
