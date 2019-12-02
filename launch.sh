@@ -68,9 +68,6 @@ assume_role(){
         aws sts get-caller-identity || abort "Unable to determine caller identity :("
   fi
 
-  local unix_timestamp
-  unix_timestamp=$(date +%s%N | cut -b1-13)
-
   JSON_STS=$(aws sts assume-role --role-arn "$STS_ROLE"  --role-session-name "EnableSecurityHub")
 
   if [ -z "$JSON_STS" ]; then
@@ -141,6 +138,7 @@ SECURITYHUB_CROSSACCOUNT_ROLE="$3"
 SECURITYHUB_LISTACCOUNTS_ROLE="$4"
 SECURITYHUB_EXECUTION_ROLE="$5"
 SECURITYHUB_REGIONS="${6:+noregions}"
+SECURITYHUB_REGIONS="eu-west-1,eu-west-2,eu-west-3,eu-central-1,us-east-1"
 
 check_input "$SECURITYHUB_USER_ID" "$SECURITYHUB_ACCESS_KEY" "$SECURITYHUB_CROSSACCOUNT_ROLE" "$SECURITYHUB_LISTACCOUNTS_ROLE" "$SECURITYHUB_EXECUTION_ROLE" "$SECURITYHUB_REGIONS"
 
@@ -159,8 +157,6 @@ write_aws_credentials
 write_aws_main_config "$CROSS_ACCOUNT_ROLE" "$LIST_ACCOUNTS_ROLE"
 
 CMD_STRING="--master_account $SECURITY_ACCOUNT_ID --assume_role $DEPLOY_ROLE"
-
-  "$REGION_STRING"
 
 if [ "$SECURITYHUB_REGIONS" = "noregions" ]; then
   echo "No region configured, not adding to the command"
