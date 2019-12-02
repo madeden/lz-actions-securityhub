@@ -158,7 +158,7 @@ mkdir -p ~/.aws
 write_aws_credentials
 write_aws_main_config "$CROSS_ACCOUNT_ROLE" "$LIST_ACCOUNTS_ROLE"
 
-if [ -z "$SECURITYHUB_REGIONS" ]; then
+if [ "$SECURITYHUB_REGIONS" = "noregions" ]; then
   REGION_STRING=""
 else
   REGION_STRING="--enabled-regions ${SECURITYHUB_REGIONS}"
