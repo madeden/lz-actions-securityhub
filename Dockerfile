@@ -2,6 +2,9 @@
 FROM ubuntu:18.04
 
 ENV DEBIAN_FRONTEND=noninteractive
+ENV AWS_FOLDER=/tmp/aws
+ENV AWS_SHARED_CREDENTIALS_FILE=${AWS_FOLDER}/credentials
+ENV AWS_CONFIG_FILE=${AWS_FOLDER}/config
 ARG USERNAME=securityhub
 ARG USERID=34000
 
@@ -28,7 +31,9 @@ RUN apt-get update \
 RUN addgroup --gid ${USERID} ${USERNAME} \
   && useradd --shell /bin/bash -g ${USERNAME} ${USERNAME} \
   && chown -R ${USERNAME} /${USERNAME}/ \
-  && chmod +x /${USERNAME}/*.py
+  && chmod +x /${USERNAME}/*.py \
+  && mdkr -p ${AWS_FOLDER} \
+  && chown -R ${USERNAME} ${AWS_FOLDER} \
 
 # Copies your code file from your action repository to the filesystem path `/` of the container
 COPY launch.sh /entrypoint.sh

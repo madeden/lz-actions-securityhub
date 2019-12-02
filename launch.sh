@@ -22,21 +22,19 @@ check_env(){
 }
 
 write_aws_credentials() {
-  mkdir -p ~/.aws 
   sed \
     -e "s/AWS_ACCESS_KEY_ID/$AWS_ACCESS_KEY_ID/g" \
     -e "s/AWS_SECRET_ACCESS_KEY/$AWS_SECRET_ACCESS_KEY/g" \
-    credentials.template > ~/.aws/credentials
+    credentials.template > "${AWS_SHARED_CREDENTIALS_FILE}"
 }
 
 write_aws_main_config() {
   local CROSSACCOUNT_ROLE="$1"
   local LIST_ACCOUNTS_ROLE="$2"
-  mkdir -p ~/.aws
   sed \
     -e "s/CROSSACCOUNT_ROLE/$CROSSACCOUNT_ROLE/g" \
     -e "s/LIST_ACCOUNTS_ROLE/$LIST_ACCOUNTS_ROLE/g" \
-    config.template > ~/.aws/config
+    config.template > "${AWS_CONFIG_FILE}"
 }
 
 add_account_to_aws_config() {
@@ -52,7 +50,7 @@ source_profile = crossaccount
 output = json
 region = eu-west-1
 
-EOF >> ~/.aws/config
+EOF >> "${AWS_CONFIG_FILE}"
   done < "${ACCOUNT_LIST}"
 
 }
