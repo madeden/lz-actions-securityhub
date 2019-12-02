@@ -1,6 +1,7 @@
 #!/bin/bash
 
 DEBUG="true"
+set -x 
 
 abort(){
   echo "$1"
@@ -152,7 +153,6 @@ CROSS_ACCOUNT_ROLE="$SECURITYHUB_CROSSACCOUNT_ROLE"
 DEPLOY_ROLE="$SECURITYHUB_EXECUTION_ROLE"
 LIST_ACCOUNTS_ROLE="$SECURITYHUB_LISTACCOUNTS_ROLE"
 SECURITY_ACCOUNT_ID=$(cut -f5 -d: <<< "$CROSS_ACCOUNT_ROLE")
-CSV_FILE="/tmp/organization.csv"
 
 mkdir -p ~/.aws 
 write_aws_credentials
@@ -166,11 +166,11 @@ fi
 
 # List accounts retrieving the ID and store them in a CSV file
 check_env
-organizations_list_accounts_to_csv "$CSV_FILE"
+organizations_list_accounts_to_csv /tmp/organization.csv
 
 # Execute the script on CSV file as the security user
 assume_role "$CROSS_ACCOUNT_ROLE"
 /securityhub/enablesecurityhub.py --master_account "$SECURITY_ACCOUNT_ID" \
-  --assume_role "$DEPLOY_ROLE" \
   "$REGION_STRING" \
-  "$CSV_FILE"
+  --assume_role "$DEPLOY_ROLE" \
+  /tmp/organization.csv
