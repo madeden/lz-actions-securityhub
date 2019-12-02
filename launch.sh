@@ -96,7 +96,7 @@ check_input(){
 }
 
 #Validate input parameters
-if [ "$#" -ne 5 ]; then
+if [ "$#" -lt 5 ]; then
   abort "Invalid number of parameters :("
 fi
 
