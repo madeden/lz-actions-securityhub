@@ -33,7 +33,7 @@ RUN addgroup --gid ${USERID} ${USERNAME} \
   && chown -R ${USERNAME} /${USERNAME}/ \
   && chmod +x /${USERNAME}/*.py \
   && mdkr -p ${AWS_FOLDER} \
-  && chown -R ${USERNAME} ${AWS_FOLDER} \
+  && chown -R ${USERNAME} ${AWS_FOLDER}
 
 # Copies your code file from your action repository to the filesystem path `/` of the container
 COPY launch.sh /entrypoint.sh
