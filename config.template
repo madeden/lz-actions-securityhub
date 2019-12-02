@@ -1,0 +1,16 @@
+[profile default]
+output = json
+region = eu-west-1
+
+[profile crossaccount]
+role_arn = CROSSACCOUNT_ROLE
+source_profile = default
+output = json
+region = eu-west-1
+
+[profile listaccounts]
+role_arn = LISTACCOUNTS_ROLE
+source_profile = crossaccount
+output = json
+region = eu-west-1
+

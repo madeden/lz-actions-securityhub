@@ -21,6 +21,42 @@ check_env(){
   done
 }
 
+write_aws_credentials() {
+  mkdir -p ~/.aws 
+  sed \
+    -e "s/AWS_ACCESS_KEY_ID/$AWS_ACCESS_KEY_ID/g" \
+    -e "s/AWS_SECRET_ACCESS_KEY/$AWS_SECRET_ACCESS_KEY/g" \
+    credentials.template > ~/.aws/credentials
+}
+
+write_aws_main_config() {
+  local CROSSACCOUNT_ROLE="$1"
+  local LIST_ACCOUNTS_ROLE="$2"
+  mkdir -p ~/.aws
+  sed \
+    -e "s/CROSSACCOUNT_ROLE/$CROSSACCOUNT_ROLE/g" \
+    -e "s/LIST_ACCOUNTS_ROLE/$LIST_ACCOUNTS_ROLE/g" \
+    config.template > ~/.aws/config
+}
+
+add_account_to_aws_config() {
+  local ACCOUNT_LIST="$1"
+  local DEPLOY_ROLE="$2"
+
+  while read line; do
+    TARGET_ACCOUNT=$(cut -f1 -d, <<< "${line}")
+    echo <<< EOF
+["${TARGET_ACCOUNT}"_execution]
+role_arn = arn:aws:iam::"${TARGET_ACCOUNT}":role/"${DEPLOY_ROLE}"
+source_profile = crossaccount
+output = json
+region = eu-west-1
+
+EOF >> ~/.aws/config
+  done < "${ACCOUNT_LIST}"
+
+}
+
 assume_role(){
   local STS_ROLE="$1"      
   local JSON_STS=""
@@ -58,7 +94,7 @@ organizations_list_accounts_to_csv(){
   local OUTPUT="$1"
   local ACCOUNTS
   
-  ACCOUNTS=$(aws organizations list-accounts)
+  ACCOUNTS=$(aws --profile listaccounts organizations list-accounts)
 
   if [ -z "$ACCOUNTS" ]; then
     abort "Unable to list accounts :("
@@ -113,11 +149,14 @@ check_input "$SECURITYHUB_USER_ID" "$SECURITYHUB_ACCESS_KEY" "$SECURITYHUB_CROSS
 export AWS_ACCESS_KEY_ID="$SECURITYHUB_USER_ID"
 export AWS_SECRET_ACCESS_KEY="$SECURITYHUB_ACCESS_KEY"
 export AWS_SESSION_TOKEN=""
-PRIMARY_SECURITY_ACCOUNT_ROLE="$SECURITYHUB_CROSSACCOUNT_ROLE"
+CROSS_ACCOUNT_ROLE="$SECURITYHUB_CROSSACCOUNT_ROLE"
 DEPLOY_ROLE="$SECURITYHUB_EXECUTION_ROLE"
 LIST_ACCOUNTS_ROLE="$SECURITYHUB_LISTACCOUNTS_ROLE"
-SECURITY_ACCOUNT_ID=$(cut -f5 -d: <<< "$PRIMARY_SECURITY_ACCOUNT_ROLE")
+SECURITY_ACCOUNT_ID=$(cut -f5 -d: <<< "$CROSS_ACCOUNT_ROLE")
 CSV_FILE="/tmp/organization.csv"
+
+write_aws_credentials
+write_aws_main_config "$CROSS_ACCOUNT_ROLE" "$LIST_ACCOUNTS_ROLE"
 
 if [ -z "$SECURITYHUB_REGIONS" ]; then
   REGION_STRING=""
@@ -127,15 +166,12 @@ fi
 
 # List accounts retrieving the ID and store them in a CSV file
 check_env
-assume_role "$PRIMARY_SECURITY_ACCOUNT_ROLE"
-assume_role "$LIST_ACCOUNTS_ROLE"
 organizations_list_accounts_to_csv "$CSV_FILE"
 
+cat "$CSV_FILE"
+
 # Execute the script on CSV file as the security user
-export AWS_ACCESS_KEY_ID="$SECURITYHUB_USER_ID"
-export AWS_SECRET_ACCESS_KEY="$SECURITYHUB_ACCESS_KEY"
-export AWS_SESSION_TOKEN=""
-assume_role "$PRIMARY_SECURITY_ACCOUNT_ROLE"
+assume_role "$CROSS_ACCOUNT_ROLE"
 /${USERNAME}/enablesecurityhub.py --master_account "$SECURITY_ACCOUNT_ID" \
   --assume_role "$DEPLOY_ROLE" \
   "$REGION_STRING" \
