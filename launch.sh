@@ -25,7 +25,7 @@ write_aws_credentials() {
   sed \
     -e "s#AWS_ACCESS_KEY_ID#$AWS_ACCESS_KEY_ID#g" \
     -e "s#AWS_SECRET_ACCESS_KEY#$AWS_SECRET_ACCESS_KEY#g" \
-    /credentials.template > "${AWS_SHARED_CREDENTIALS_FILE}"
+    /credentials.template > ~/.aws/credentials
 }
 
 write_aws_main_config() {
@@ -34,7 +34,7 @@ write_aws_main_config() {
   sed \
     -e "s#CROSSACCOUNT_ROLE#$CROSSACCOUNT_ROLE#g" \
     -e "s#LIST_ACCOUNTS_ROLE#$LIST_ACCOUNTS_ROLE#g" \
-    /config.template > "${AWS_CONFIG_FILE}"
+    /config.template > ~/.aws/config
 }
 
 # add_account_to_aws_config() {
@@ -147,9 +147,7 @@ check_input "$SECURITYHUB_USER_ID" "$SECURITYHUB_ACCESS_KEY" "$SECURITYHUB_CROSS
 export AWS_ACCESS_KEY_ID="$SECURITYHUB_USER_ID"
 export AWS_SECRET_ACCESS_KEY="$SECURITYHUB_ACCESS_KEY"
 export AWS_SESSION_TOKEN=""
-export AWS_FOLDER=/tmp/aws
-export AWS_SHARED_CREDENTIALS_FILE=${AWS_FOLDER}/credentials
-export AWS_CONFIG_FILE=${AWS_FOLDER}/config
+mkdir -p ~/.aws 
 
 CROSS_ACCOUNT_ROLE="$SECURITYHUB_CROSSACCOUNT_ROLE"
 DEPLOY_ROLE="$SECURITYHUB_EXECUTION_ROLE"
