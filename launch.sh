@@ -1,7 +1,6 @@
 #!/bin/bash
 
 DEBUG="true"
-set -x 
 
 abort(){
   echo "$1"
@@ -37,24 +36,6 @@ write_aws_main_config() {
     -e "s#LIST_ACCOUNTS_ROLE#$LIST_ACCOUNTS_ROLE#g" \
     /config.template > ~/.aws/config
 }
-
-# add_account_to_aws_config() {
-#   local ACCOUNT_LIST="$1"
-#   local DEPLOY_ROLE="$2"
-
-#   while read line; do
-#     TARGET_ACCOUNT=$(cut -f1 -d, <<< "${line}")
-#     echo <<< EOF
-# ["${TARGET_ACCOUNT}"_execution]
-# role_arn = arn:aws:iam::"${TARGET_ACCOUNT}":role/"${DEPLOY_ROLE}"
-# source_profile = crossaccount
-# output = json
-# region = eu-west-1
-
-# EOF >> "${AWS_CONFIG_FILE}"
-#   done < "${ACCOUNT_LIST}"
-
-# }
 
 assume_role(){
   local STS_ROLE="$1"      
@@ -161,7 +142,7 @@ CMD_STRING="--master_account $SECURITY_ACCOUNT_ID --assume_role $DEPLOY_ROLE"
 if [ "$SECURITYHUB_REGIONS" = "noregions" ]; then
   echo "No region configured, not adding to the command"
 else
-  CMD_STRING="$CMD_STRING --enabled-regions ${SECURITYHUB_REGIONS}"
+  CMD_STRING="$CMD_STRING --enabled_regions ${SECURITYHUB_REGIONS}"
 fi
 
 # List accounts retrieving the ID and store them in a CSV file
