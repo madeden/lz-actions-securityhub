@@ -37,23 +37,23 @@ write_aws_main_config() {
     /config.template > "${AWS_CONFIG_FILE}"
 }
 
-add_account_to_aws_config() {
-  local ACCOUNT_LIST="$1"
-  local DEPLOY_ROLE="$2"
+# add_account_to_aws_config() {
+#   local ACCOUNT_LIST="$1"
+#   local DEPLOY_ROLE="$2"
 
-  while read line; do
-    TARGET_ACCOUNT=$(cut -f1 -d, <<< "${line}")
-    echo <<< EOF
-["${TARGET_ACCOUNT}"_execution]
-role_arn = arn:aws:iam::"${TARGET_ACCOUNT}":role/"${DEPLOY_ROLE}"
-source_profile = crossaccount
-output = json
-region = eu-west-1
+#   while read line; do
+#     TARGET_ACCOUNT=$(cut -f1 -d, <<< "${line}")
+#     echo <<< EOF
+# ["${TARGET_ACCOUNT}"_execution]
+# role_arn = arn:aws:iam::"${TARGET_ACCOUNT}":role/"${DEPLOY_ROLE}"
+# source_profile = crossaccount
+# output = json
+# region = eu-west-1
 
-EOF >> "${AWS_CONFIG_FILE}"
-  done < "${ACCOUNT_LIST}"
+# EOF >> "${AWS_CONFIG_FILE}"
+#   done < "${ACCOUNT_LIST}"
 
-}
+# }
 
 assume_role(){
   local STS_ROLE="$1"      
@@ -147,6 +147,10 @@ check_input "$SECURITYHUB_USER_ID" "$SECURITYHUB_ACCESS_KEY" "$SECURITYHUB_CROSS
 export AWS_ACCESS_KEY_ID="$SECURITYHUB_USER_ID"
 export AWS_SECRET_ACCESS_KEY="$SECURITYHUB_ACCESS_KEY"
 export AWS_SESSION_TOKEN=""
+export AWS_FOLDER=/tmp/aws
+export AWS_SHARED_CREDENTIALS_FILE=${AWS_FOLDER}/credentials
+export AWS_CONFIG_FILE=${AWS_FOLDER}/config
+
 CROSS_ACCOUNT_ROLE="$SECURITYHUB_CROSSACCOUNT_ROLE"
 DEPLOY_ROLE="$SECURITYHUB_EXECUTION_ROLE"
 LIST_ACCOUNTS_ROLE="$SECURITYHUB_LISTACCOUNTS_ROLE"
