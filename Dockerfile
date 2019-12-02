@@ -14,7 +14,7 @@ RUN apt-get update \
     file \
     git \
   && mkdir -p /securityhub \
-  && git clone https://github.com/awslabs/aws-securityhub-multiaccount-scripts /${USERNAME} \
+  && git clone https://github.com/awslabs/aws-securityhub-multiaccount-scripts /securityhub \
   && pip3 install --upgrade setuptools \
   && pip3 install --upgrade wheel \
   && pip3 install --upgrade PyYAML \
@@ -24,7 +24,7 @@ RUN apt-get update \
   && pip3 freeze
 
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1 \
-  && chmod +x /${USERNAME}/*.py
+  && chmod +x /securityhub/*.py
 
 # Copies your code file from your action repository to the filesystem path `/` of the container
 COPY launch.sh /entrypoint.sh
