@@ -70,7 +70,7 @@ assume_role(){
   local unix_timestamp
   unix_timestamp=$(date +%s%N | cut -b1-13)
 
-  JSON_STS=$(aws sts assume-role --role-arn "$STS_ROLE"  --role-session-name "session-$unix_timestamp")
+  JSON_STS=$(aws sts assume-role --role-arn "$STS_ROLE")
 
   if [ -z "$JSON_STS" ]; then
     abort "Unable to assume role :("
