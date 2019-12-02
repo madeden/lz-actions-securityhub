@@ -4,13 +4,14 @@ region = eu-west-1
 
 [profile crossaccount]
 role_arn = arn:aws:iam::282110668054:role/AWSLandingZoneSecurityHubRole
+role_session_name = crossaccount
 source_profile = default
 output = json
 region = eu-west-1
 
 [profile listaccounts]
 role_arn = arn:aws:iam::728750458569:role/AWSLandingZoneReadOnlyListAccountsRole
+role_session_name = listaccounts
 source_profile = crossaccount
 output = json
 region = eu-west-1
-
