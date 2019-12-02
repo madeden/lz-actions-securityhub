@@ -32,7 +32,7 @@ RUN addgroup --gid ${USERID} ${USERNAME} \
   && useradd --shell /bin/bash -g ${USERNAME} ${USERNAME} \
   && chown -R ${USERNAME} /${USERNAME}/ \
   && chmod +x /${USERNAME}/*.py \
-  && mdkr -p ${AWS_FOLDER} \
+  && mkdir -p ${AWS_FOLDER} \
   && chown -R ${USERNAME} ${AWS_FOLDER}
 
 # Copies your code file from your action repository to the filesystem path `/` of the container
