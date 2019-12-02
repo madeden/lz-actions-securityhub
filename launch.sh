@@ -25,7 +25,7 @@ write_aws_credentials() {
   sed \
     -e s/AWS_ACCESS_KEY_ID/$AWS_ACCESS_KEY_ID/g \
     -e s/AWS_SECRET_ACCESS_KEY/$AWS_SECRET_ACCESS_KEY/g \
-    credentials.template > "${AWS_SHARED_CREDENTIALS_FILE}"
+    /credentials.template > "${AWS_SHARED_CREDENTIALS_FILE}"
 }
 
 write_aws_main_config() {
@@ -34,7 +34,7 @@ write_aws_main_config() {
   sed \
     -e s/CROSSACCOUNT_ROLE/$CROSSACCOUNT_ROLE/g \
     -e s/LIST_ACCOUNTS_ROLE/$LIST_ACCOUNTS_ROLE/g \
-    config.template > "${AWS_CONFIG_FILE}"
+    /config.template > "${AWS_CONFIG_FILE}"
 }
 
 add_account_to_aws_config() {

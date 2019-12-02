@@ -37,6 +37,8 @@ RUN addgroup --gid ${USERID} ${USERNAME} \
 
 # Copies your code file from your action repository to the filesystem path `/` of the container
 COPY launch.sh /entrypoint.sh
+COPY config.template /config.template
+COPY credentials.template /credentials.template
 
 # Switch to ${USERNAME} user
 USER ${USERNAME}
