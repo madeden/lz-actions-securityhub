@@ -38,7 +38,7 @@ COPY config.template /config.template
 COPY credentials.template /credentials.template
 
 # Switch to ${USERNAME} user
-USER ${USERNAME}
+# USER ${USERNAME}
 
 # Code file to execute when the docker container starts up (`entrypoint.sh`)
 ENTRYPOINT ["/entrypoint.sh"]
