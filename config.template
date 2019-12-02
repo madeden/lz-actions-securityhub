@@ -4,7 +4,7 @@ region = eu-west-1
 
 [profile crossaccount]
 role_arn = arn:aws:iam::282110668054:role/AWSLandingZoneSecurityHubRole
-role_session_name = CrossAccountSecurityHub
+role_session_name = EnableSecurityHub
 source_profile = default
 output = json
 region = eu-west-1
