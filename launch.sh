@@ -174,5 +174,4 @@ organizations_list_accounts_to_csv /tmp/organization.csv
 
 # Execute the script on CSV file as the security user
 assume_role "$CROSS_ACCOUNT_ROLE"
-/securityhub/enablesecurityhub.py "$CMD_STRING" \
-  /tmp/organization.csv
+/securityhub/enablesecurityhub.py $CMD_STRING /tmp/organization.csv
