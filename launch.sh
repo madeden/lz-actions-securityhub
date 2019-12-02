@@ -172,7 +172,7 @@ cat "$CSV_FILE"
 
 # Execute the script on CSV file as the security user
 assume_role "$CROSS_ACCOUNT_ROLE"
-/${USERNAME}/enablesecurityhub.py --master_account "$SECURITY_ACCOUNT_ID" \
+/securityhub/enablesecurityhub.py --master_account "$SECURITY_ACCOUNT_ID" \
   --assume_role "$DEPLOY_ROLE" \
   "$REGION_STRING" \
   "$CSV_FILE"
