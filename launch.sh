@@ -158,10 +158,14 @@ mkdir -p ~/.aws
 write_aws_credentials
 write_aws_main_config "$CROSS_ACCOUNT_ROLE" "$LIST_ACCOUNTS_ROLE"
 
+CMD_STRING="--master_account $SECURITY_ACCOUNT_ID --assume_role $DEPLOY_ROLE"
+
+  "$REGION_STRING"
+
 if [ "$SECURITYHUB_REGIONS" = "noregions" ]; then
-  REGION_STRING=""
+  echo "No region configured, not adding to the command"
 else
-  REGION_STRING="--enabled-regions ${SECURITYHUB_REGIONS}"
+  CMD_STRING="$CMD_STRING --enabled-regions ${SECURITYHUB_REGIONS}"
 fi
 
 # List accounts retrieving the ID and store them in a CSV file
@@ -170,7 +174,5 @@ organizations_list_accounts_to_csv /tmp/organization.csv
 
 # Execute the script on CSV file as the security user
 assume_role "$CROSS_ACCOUNT_ROLE"
-/securityhub/enablesecurityhub.py --master_account "$SECURITY_ACCOUNT_ID" \
-  "$REGION_STRING" \
-  --assume_role "$DEPLOY_ROLE" \
+/securityhub/enablesecurityhub.py "$CMD_STRING" \
   /tmp/organization.csv
