@@ -14,7 +14,6 @@ RUN apt-get update \
     file \
     git \
   && mkdir -p /securityhub \
-  && git clone https://github.com/awslabs/aws-securityhub-multiaccount-scripts /securityhub \
   && pip3 install --upgrade setuptools \
   && pip3 install --upgrade wheel \
   && pip3 install --upgrade PyYAML \
@@ -22,6 +21,9 @@ RUN apt-get update \
   && pip3 install --upgrade pyyaml \
   && pip3 install --upgrade boto3 \
   && pip3 freeze
+
+# Copies the securityhub enabler scripts
+COPY securityhub-enabler/* securityhub/
 
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1 \
   && chmod +x /securityhub/*.py
